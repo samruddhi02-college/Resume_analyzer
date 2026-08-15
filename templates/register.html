@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block public_content %}
+<div style="display:flex;min-height:100vh">
+  <div style="flex:1;background:var(--b2);display:flex;align-items:center;justify-content:center;padding:40px">
+    <div style="max-width:420px">
+      <div style="font-size:52px;margin-bottom:20px">🚀</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;line-height:1.2;margin-bottom:12px">Join 5,000+ teams<br><span style="color:var(--ac)">hiring with AI</span></h2>
+      <p style="color:var(--t2);font-size:14px;line-height:1.7">Free to start, no credit card needed. Screen your first resume in 60 seconds.</p>
+    </div>
+  </div>
+  <div style="width:440px;display:flex;align-items:center;justify-content:center;padding:40px">
+    <div style="width:100%;max-width:360px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:26px;font-family:'Syne',sans-serif;font-size:17px;font-weight:800">
+        <div class="logo-i"><i class="fas fa-brain" style="color:#fff"></i></div>Resume<span style="color:var(--ac)">AI</span>
+      </div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px">Create your account</h2>
+      <p style="color:var(--t3);font-size:13px;margin-bottom:22px">Free — no credit card required</p>
+      {% with msgs=get_flashed_messages(with_categories=true) %}{% for c,m in msgs %}<div class="alert-{{ 'e' if c=='error' else 'i' }}"><i class="fas fa-info-circle"></i> {{ m }}</div>{% endfor %}{% endwith %}
+      <form method="POST">
+        <div class="fg"><label class="flbl">Full Name</label><input type="text" name="name" class="inp" placeholder="Jane Smith" required></div>
+        <div class="fg"><label class="flbl">Company</label><input type="text" name="company" class="inp" placeholder="Acme Corp" required></div>
+        <div class="fg"><label class="flbl">Email</label><input type="email" name="email" class="inp" placeholder="jane@company.com" required></div>
+        <div class="fg"><label class="flbl">Password</label><input type="password" name="password" class="inp" placeholder="Min 6 chars" required minlength="6"></div>
+        <button type="submit" class="btn btn-p" style="width:100%;justify-content:center;padding:12px;font-size:14px"><i class="fas fa-rocket"></i> Create Free Account</button>
+      </form>
+      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--t3)">Have an account? <a href="/login" style="color:var(--ac)">Sign in</a></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

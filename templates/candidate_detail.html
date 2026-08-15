@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{{ c.name }}{% endblock %}
+{% block content %}
+<div style="margin-bottom:16px"><a href="/candidates" class="btn btn-o btn-sm"><i class="fas fa-arrow-left"></i> Back</a></div>
+
+<div class="card" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:18px">
+  <div class="av" style="width:60px;height:60px;border-radius:14px;font-size:20px;background:linear-gradient(135deg,var(--ac),var(--cy));flex-shrink:0">{{ c.name[:2].upper() }}</div>
+  <div style="flex:1">
+    <h1 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800">{{ c.name }}</h1>
+    <div style="color:var(--t3);font-size:13px;margin-top:3px">{{ c.email }}{% if c.phone %} · {{ c.phone }}{% endif %}{% if c.location %} · {{ c.location }}{% endif %}</div>
+    <div style="margin-top:8px"><span class="badge badge-{{ 'sl' if c.status=='Shortlisted' else 'rj' if c.status=='Rejected' else 'iv' if c.status=='Interview Scheduled' else 'rv' }}">{{ c.status }}</span></div>
+  </div>
+  <div style="text-align:center;background:var(--b3);border:1px solid var(--bd2);border-radius:14px;padding:18px 28px">
+    <div style="font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:{{ 'var(--gr)' if c.score>=85 else 'var(--yw)' if c.score>=70 else 'var(--pk)' }}">{{ c.score }}</div>
+    <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px">AI Score</div>
+    <div style="font-size:12px;font-weight:700;margin-top:4px;color:{{ 'var(--gr)' if c.score>=85 else 'var(--yw)' if c.score>=70 else 'var(--pk)' }}">{{ 'Elite' if c.score>=90 else 'Strong' if c.score>=80 else 'Moderate' if c.score>=70 else 'Below' }}</div>
+  </div>
+</div>
+
+<div class="g2">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-user" style="color:var(--ac)"></i> Profile</div>
+      {% for lbl,val in [('Education',c.education),('Experience',c.experience),('Applied',c.applied),('Location',c.location or '—')] %}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px">
+        <span style="color:var(--t3)">{{ lbl }}</span><span style="font-weight:500">{{ val }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="fas fa-code" style="color:var(--gr)"></i> Skills ({{ c.skills|length }})</div>
+      {% for s in c.skills %}<span class="tag">{{ s }}</span>{% endfor %}
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="fas fa-exchange-alt" style="color:var(--yw)"></i> Update Status</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <button class="btn btn-g btn-sm" onclick="setStatus('{{ c.id }}','Shortlisted')"><i class="fas fa-check"></i> Shortlist</button>
+        <button class="btn btn-o btn-sm" onclick="setStatus('{{ c.id }}','Interview Scheduled')"><i class="fas fa-calendar"></i> Schedule</button>
+        <button class="btn btn-o btn-sm" onclick="setStatus('{{ c.id }}','Under Review')"><i class="fas fa-clock"></i> Review</button>
+        <button class="btn btn-r btn-sm" onclick="setStatus('{{ c.id }}','Rejected')"><i class="fas fa-times"></i> Reject</button>
+      </div>
+      <div id="smsg" style="display:none;margin-top:10px" class="alert-s"><i class="fas fa-check-circle"></i> Status updated!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><i class="fas fa-robot" style="color:var(--ac)"></i> AI Skill Analysis</div>
+    {% if job %}
+    <div style="margin-bottom:16px">
+      <div style="font-size:12px;color:var(--t2);margin-bottom:7px">Skill coverage for <strong>{{ job.title }}</strong></div>
+      <div style="height:8px;background:var(--b3);border-radius:4px;overflow:hidden">
+        <div style="width:{{ (c.skills|length / job.skills|length * 100)|int }}%;height:100%;background:linear-gradient(90deg,var(--ac),var(--gr));border-radius:4px"></div>
+      </div>
+      <div style="font-size:11px;color:var(--t3);margin-top:4px">{{ c.skills|length }} of {{ job.skills|length }} required skills</div>
+    </div>
+    <div class="g2" style="gap:10px">
+      <div style="background:rgba(61,220,132,.05);border:1px solid rgba(61,220,132,.15);border-radius:10px;padding:12px">
+        <div style="font-size:10px;color:var(--gr);font-weight:700;text-transform:uppercase;margin-bottom:8px">✓ Matched</div>
+        {% for s in job.skills %}{% if s in c.skills %}<span class="tag" style="background:rgba(61,220,132,.1);color:#5ddb96;border-color:rgba(61,220,132,.2)">{{ s }}</span>{% endif %}{% endfor %}
+      </div>
+      <div style="background:rgba(255,107,138,.05);border:1px solid rgba(255,107,138,.15);border-radius:10px;padding:12px">
+        <div style="font-size:10px;color:var(--pk);font-weight:700;text-transform:uppercase;margin-bottom:8px">✗ Missing</div>
+        {% for s in job.skills %}{% if s not in c.skills %}<span class="tag" style="background:rgba(255,107,138,.1);color:#ff8fab;border-color:rgba(255,107,138,.2)">{{ s }}</span>{% endif %}{% endfor %}
+      </div>
+    </div>
+    {% else %}<p style="color:var(--t3);font-size:13px">Job details not available.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function setStatus(id,status){
+  fetch('/api/update-status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status})})
+  .then(r=>r.json()).then(d=>{if(d.ok){const m=document.getElementById('smsg');m.style.display='flex';setTimeout(()=>m.style.display='none',3000);}});
+}
+</script>
+{% endblock %}

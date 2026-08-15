@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}ResumeAI{% endblock %}</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static',filename='css/main.css') }}">
+</head>
+<body>
+{% if session.user %}
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo"><div class="logo-i"><i class="fas fa-brain" style="color:#fff"></i></div>Resume<span>AI</span></div>
+    <nav class="nav">
+      <div class="nav-lbl">Overview</div>
+      <a href="/dashboard"  class="{% if request.endpoint=='dashboard' %}on{% endif %}"><i class="fas fa-th-large"></i> Dashboard</a>
+      <a href="/jobs"       class="{% if request.endpoint=='jobs' %}on{% endif %}"><i class="fas fa-briefcase"></i> Jobs</a>
+      <a href="/candidates" class="{% if request.endpoint in ['candidates','candidate_detail'] %}on{% endif %}"><i class="fas fa-users"></i> Candidates</a>
+      <div class="nav-lbl">AI Tools</div>
+      <a href="/screen"     class="{% if request.endpoint=='screen' %}on{% endif %}"><i class="fas fa-robot"></i> AI Screener</a>
+      <div class="nav-lbl">Insights</div>
+      <a href="/analytics"   class="{% if request.endpoint=='analytics' %}on{% endif %}"><i class="fas fa-chart-bar"></i> Analytics</a>
+      <a href="/data-mining" class="{% if request.endpoint=='data_mining_page' %}on{% endif %}"><i class="fas fa-database"></i> Data Mining</a>
+      <div class="nav-lbl">Info</div>
+      <a href="/about" class="{% if request.endpoint=='about' %}on{% endif %}"><i class="fas fa-info-circle"></i> About</a>
+    </nav>
+    <div class="sfoot">
+      <div class="uchip">
+        <div class="av">{{ session.avatar }}</div>
+        <div><div class="uname">{{ session.user_name }}</div><div class="uco">{{ session.company }}</div></div>
+      </div>
+      <a href="/logout" class="lgout"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="btn btn-o btn-sm menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+      <div class="live-pill"><span class="live-dot"></span> Live</div>
+    </header>
+    <div class="page">
+      {% with msgs=get_flashed_messages(with_categories=true) %}
+        {% for cat,msg in msgs %}
+          <div class="alert-{{ 'e' if cat=='error' else 's' if cat=='success' else 'i' }}"><i class="fas fa-info-circle"></i> {{ msg }}</div>
+        {% endfor %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% else %}{% block public_content %}{% endblock %}{% endif %}
+<script src="{{ url_for('static',filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

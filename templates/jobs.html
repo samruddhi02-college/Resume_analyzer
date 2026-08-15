@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Jobs{% endblock %}
+{% block content %}
+<div class="ph">
+  <div><h1>Job Listings</h1><p>Manage open positions and track applications.</p></div>
+  <button class="btn btn-p" onclick="alert('Connect to backend to add jobs!')"><i class="fas fa-plus"></i> Post Job</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+{% for job in jobs %}
+<div class="card" style="display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:5px">{{ job.title }}</div>
+      <span class="badge badge-{{ 'on' if job.status=='Active' else 'off' }}">{{ job.status }}</span>
+    </div>
+    <div style="width:40px;height:40px;background:rgba(124,107,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--ac)"><i class="fas fa-briefcase"></i></div>
+  </div>
+  <div style="font-size:12px;color:var(--t3);display:flex;gap:14px">
+    <span><i class="fas fa-map-marker-alt"></i> {{ job.location }}</span>
+    <span><i class="fas fa-sitemap"></i> {{ job.dept }}</span>
+  </div>
+  <div>{% for s in job.skills %}<span class="tag">{{ s }}</span>{% endfor %}</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--bd)">
+    <div style="display:flex;gap:18px">
+      <div><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--ac)">{{ job.applicants }}</div><div style="font-size:9px;color:var(--t3)">applied</div></div>
+      <div><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--gr)">{{ job.shortlisted }}</div><div style="font-size:9px;color:var(--t3)">shortlisted</div></div>
+    </div>
+    <a href="/candidates?job={{ job.id }}" class="btn btn-o btn-sm">View <i class="fas fa-arrow-right"></i></a>
+  </div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}

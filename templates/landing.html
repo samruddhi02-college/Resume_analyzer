@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ResumeAI — AI Resume Screening</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=DM+Sans:wght@400;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--ac:#7c6bff;--gr:#3ddc84;--pk:#ff6b8a;--t2:#9090b8;--bd:rgba(255,255,255,.08);}
+body{background:#0a0a18;color:#e8e8f4;font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:.2s;}
+.btn-p{background:var(--ac);color:#fff;}.btn-p:hover{background:#6452e8;transform:translateY(-1px);}
+.btn-o{background:none;border:1px solid var(--bd);color:var(--t2);}.btn-o:hover{border-color:var(--ac);color:var(--ac);}
+nav{position:fixed;top:0;left:0;right:0;z-index:99;padding:13px 32px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,24,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd);}
+.logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;display:flex;align-items:center;gap:9px;}
+.logo-i{background:var(--ac);padding:6px 8px;border-radius:8px;color:#fff;font-size:13px;}
+.logo span{color:var(--ac);}
+/* Hero */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:90px 20px 60px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background-color:#0a0a18;}
+.hc{position:relative;z-index:1;max-width:640px;}
+.hc h1{font-family:'Syne',sans-serif;font-size:clamp(32px,6vw,64px);font-weight:800;line-height:1.1;margin-bottom:16px;}
+.grad{background:linear-gradient(135deg,var(--ac),var(--gr));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hc p{font-size:15px;color:var(--t2);margin-bottom:28px;line-height:1.7;}
+.hbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.stats{display:flex;gap:32px;justify-content:center;margin-top:44px;flex-wrap:wrap;}
+.stats>div>div:first-child{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;}
+.stats>div>div:last-child{font-size:11px;color:var(--t2);margin-top:2px;}
+/* Features */
+.sec{padding:68px 20px;max-width:1040px;margin:0 auto;}
+.slbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ac);margin-bottom:7px;}
+.stitle{font-family:'Syne',sans-serif;font-size:clamp(22px,4vw,36px);font-weight:800;margin-bottom:32px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+.fc{background:#11112a;border:1px solid var(--bd);border-radius:13px;padding:20px;transition:.2s;}
+.fc:hover{border-color:var(--ac);transform:translateY(-2px);}
+.fc i{font-size:20px;margin-bottom:10px;display:block;}
+.fc h3{font-size:14px;font-weight:700;margin-bottom:5px;}
+.fc p{font-size:12px;color:var(--t2);line-height:1.6;}
+/* Band */
+.band{position:relative;padding:68px 20px;text-align:center;overflow:hidden;}
+.band::before{content:'';position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1400&q=75') center/cover;filter:brightness(.13);}
+.band::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(124,107,255,.15),rgba(34,211,238,.07));}
+.band .bc{position:relative;z-index:1;max-width:680px;margin:0 auto;}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:18px;margin-top:36px;}
+.step{text-align:center;}
+.sn{width:46px;height:46px;border-radius:50%;border:2px solid var(--ac);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--ac);margin:0 auto 12px;}
+.step h4{font-size:13px;font-weight:700;margin-bottom:4px;}
+.step p{font-size:12px;color:var(--t2);line-height:1.5;}
+/* CTA */
+.cta{position:relative;padding:72px 20px;text-align:center;overflow:hidden;}
+.cta::before{content:'';position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1400&q=75') center/cover;filter:brightness(.11);}
+.cta .cc{position:relative;z-index:1;}
+.cta h2{font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,42px);font-weight:800;margin-bottom:12px;}
+.cta p{color:var(--t2);font-size:14px;margin-bottom:26px;}
+footer{text-align:center;padding:24px;font-size:12px;color:#40406a;border-top:1px solid var(--bd);}
+/* Modal */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.2s;}
+.ov.on{opacity:1;pointer-events:all;}
+.modal{background:#11112a;border:1px solid rgba(124,107,255,.2);border-radius:16px;padding:28px;width:100%;max-width:340px;transform:scale(.95);transition:.2s;position:relative;}
+.ov.on .modal{transform:none;}
+.mx{position:absolute;top:11px;right:13px;background:none;border:none;color:var(--t2);cursor:pointer;font-size:16px;}
+.tabs{display:flex;background:rgba(255,255,255,.05);border-radius:7px;padding:3px;margin-bottom:17px;}
+.tab{flex:1;padding:7px;border:none;background:none;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;border-radius:5px;transition:.15s;font-family:'DM Sans',sans-serif;}
+.tab.on{background:var(--ac);color:#fff;}
+.pane{display:none;}.pane.on{display:block;}
+.mlbl{display:block;font-size:11px;font-weight:600;color:var(--t2);margin-bottom:3px;}
+.minp{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#e8e8f4;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px;transition:.15s;}
+.minp:focus{border-color:var(--ac);}
+.msub{width:100%;padding:10px;border-radius:8px;background:var(--ac);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s;}
+.msub:hover{background:#6452e8;}
+.tip{background:rgba(124,107,255,.1);border:1px solid rgba(124,107,255,.18);border-radius:7px;padding:8px 11px;font-size:11px;color:#c4b8ff;margin-bottom:12px;}
+@media(max-width:560px){.btn-o.hide{display:none;}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo"><i class="fas fa-brain logo-i"></i>Resume<span>AI</span></div>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-o hide" onclick="go('login')">Sign In</button>
+    <button class="btn btn-p" onclick="go('register')"><i class="fas fa-rocket"></i> Get Started</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hc">
+    <h1>Screen resumes<br><span class="grad">10× faster</span> with AI</h1>
+    <p>Upload PDF or paste text — instant AI score, skill gap analysis & data mining insights.</p>
+    <div class="hbtns">
+      <button class="btn btn-p" style="padding:11px 24px;font-size:14px" onclick="go('register')"><i class="fas fa-rocket"></i> Get Started Free</button>
+      <button class="btn btn-o" style="padding:11px 24px;font-size:14px" onclick="go('login')">Sign In</button>
+    </div>
+    <div class="stats">
+      <div><div style="color:var(--ac)">98%</div><div>Accuracy</div></div>
+      <div><div style="color:var(--gr)">2M+</div><div>Screened</div></div>
+      <div><div style="color:var(--pk)">5K+</div><div>Companies</div></div>
+      <div><div style="color:#ffb547">&lt;2s</div><div>Per Resume</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="slbl">Features</div>
+  <div class="stitle">Everything in one place</div>
+  <div class="grid">
+    <div class="fc"><i class="fas fa-robot" style="color:var(--ac)"></i><h3>AI Screener</h3><p>Upload PDF/DOCX or paste. Scores instantly against job requirements.</p></div>
+    <div class="fc"><i class="fas fa-database" style="color:var(--gr)"></i><h3>Data Mining</h3><p>Apriori rules, K-Means clusters & TF-IDF — live on your data.</p></div>
+    <div class="fc"><i class="fas fa-chart-bar" style="color:#ffb547"></i><h3>Analytics</h3><p>Score charts, top skills, pipeline status — all real-time.</p></div>
+    <div class="fc"><i class="fas fa-users" style="color:var(--pk)"></i><h3>Pipeline</h3><p>AI-ranked candidates, filters, one-click status updates.</p></div>
+    <div class="fc"><i class="fas fa-file-alt" style="color:var(--ac)"></i><h3>Resume Builder</h3><p>Build ATS-optimised resumes with live preview.</p></div>
+    <div class="fc"><i class="fas fa-layer-group" style="color:var(--gr)"></i><h3>Smart Clusters</h3><p>Auto-grouped into Elite / Strong / Moderate / Below tiers.</p></div>
+  </div>
+</div>
+
+<div class="band">
+  <div class="bc">
+    <div class="slbl" style="color:var(--gr)">How It Works</div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:clamp(22px,4vw,36px);font-weight:800;margin-bottom:10px">4 steps to smarter hiring</h2>
+    <p style="color:var(--t2);font-size:13px">No database setup. Just <code style="background:rgba(255,255,255,.08);padding:2px 7px;border-radius:4px">python app.py</code> and go.</p>
+    <div class="steps">
+      <div class="step"><div class="sn">1</div><h4>Post a Job</h4><p>Add role with required skills.</p></div>
+      <div class="step"><div class="sn">2</div><h4>Upload Resume</h4><p>PDF/DOCX or paste text.</p></div>
+      <div class="step"><div class="sn">3</div><h4>Review Pipeline</h4><p>Browse AI-ranked candidates.</p></div>
+      <div class="step"><div class="sn">4</div><h4>Mine Data</h4><p>Clusters, rules, patterns.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="cta">
+  <div class="cc">
+    <h2>Ready to screen smarter?</h2>
+    <p>Demo: <strong style="color:#e8e8f4">demo@resumeai.com</strong> / <strong style="color:#e8e8f4">demo1234</strong></p>
+    <button class="btn btn-p" style="padding:12px 28px;font-size:14px" onclick="go('register')"><i class="fas fa-rocket"></i> Get Started Free</button>
+  </div>
+</div>
+
+<footer>Built with Flask · Python · Chart.js — No Django 🎉</footer>
+
+<div class="ov" id="ov" onclick="if(event.target===this)cl()">
+  <div class="modal">
+    <button class="mx" onclick="cl()"><i class="fas fa-times"></i></button>
+    <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <i class="fas fa-brain" style="background:var(--ac);padding:5px 7px;border-radius:6px;font-size:12px;color:#fff"></i>Resume<span style="color:var(--ac)">AI</span>
+    </div>
+    <div class="tabs">
+      <button class="tab on" id="tl" onclick="sw('login')">Sign In</button>
+      <button class="tab" id="tr" onclick="sw('register')">Register</button>
+    </div>
+    <div class="pane on" id="pl">
+      <div class="tip"><i class="fas fa-key"></i> demo@resumeai.com / demo1234</div>
+      <form method="POST" action="/login">
+        <label class="mlbl">Email</label><input type="email" name="email" class="minp" placeholder="you@company.com" required>
+        <label class="mlbl">Password</label><input type="password" name="password" class="minp" placeholder="••••••••" required>
+        <button type="submit" class="msub"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+      </form>
+    </div>
+    <div class="pane" id="pr">
+      <form method="POST" action="/register">
+        <label class="mlbl">Name</label><input type="text" name="name" class="minp" placeholder="Jane Smith" required>
+        <label class="mlbl">Company</label><input type="text" name="company" class="minp" placeholder="Acme Corp" required>
+        <label class="mlbl">Email</label><input type="email" name="email" class="minp" placeholder="jane@company.com" required>
+        <label class="mlbl">Password</label><input type="password" name="password" class="minp" placeholder="Min 6 chars" required minlength="6">
+        <button type="submit" class="msub"><i class="fas fa-rocket"></i> Create Account</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+function go(t){document.getElementById('ov').classList.add('on');sw(t);document.body.style.overflow='hidden';}
+function cl(){document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
+function sw(t){['login','register'].forEach(x=>{document.getElementById('t'+x[0]).classList.toggle('on',x===t);document.getElementById('p'+x[0]).classList.toggle('on',x===t);});}
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.style.opacity=1;x.target.style.transform='translateY(0)'}}),{threshold:.1});
+document.querySelectorAll('.fc,.step').forEach(el=>{el.style.cssText+='opacity:0;transform:translateY(14px);transition:.4s ease';io.observe(el);});
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block public_content %}
+<div style="display:flex;min-height:100vh">
+  <div style="flex:1;background:var(--b2);display:flex;align-items:center;justify-content:center;padding:40px">
+    <div style="max-width:420px">
+      <div style="font-size:52px;margin-bottom:20px">🧠</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;line-height:1.2;margin-bottom:12px">Screen resumes<br><span style="color:var(--ac)">10× faster</span> with AI</h2>
+      <p style="color:var(--t2);font-size:14px;line-height:1.7;margin-bottom:28px">Upload PDFs, paste text, get AI scores in seconds. Join 5,000+ hiring teams.</p>
+      <div style="display:flex;gap:28px">
+        {% for val,lbl,col in [('98%','Accuracy','var(--ac)'),('2M+','Screened','var(--gr)'),('5K+','Companies','var(--pk)')] %}
+        <div><div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:{{ col }}">{{ val }}</div><div style="font-size:11px;color:var(--t3)">{{ lbl }}</div></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div style="width:440px;display:flex;align-items:center;justify-content:center;padding:40px">
+    <div style="width:100%;max-width:360px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:26px;font-family:'Syne',sans-serif;font-size:17px;font-weight:800">
+        <div class="logo-i"><i class="fas fa-brain" style="color:#fff"></i></div>Resume<span style="color:var(--ac)">AI</span>
+      </div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px">Welcome back</h2>
+      <p style="color:var(--t3);font-size:13px;margin-bottom:22px">Sign in to your dashboard</p>
+      {% with msgs=get_flashed_messages(with_categories=true) %}{% for c,m in msgs %}<div class="alert-{{ 'e' if c=='error' else 'i' }}"><i class="fas fa-info-circle"></i> {{ m }}</div>{% endfor %}{% endwith %}
+      <div class="alert-i" style="margin-bottom:18px"><i class="fas fa-key"></i> demo@resumeai.com / demo1234</div>
+      <form method="POST">
+        <div class="fg"><label class="flbl">Email</label><input type="email" name="email" class="inp" placeholder="you@company.com" required></div>
+        <div class="fg"><label class="flbl">Password</label><input type="password" name="password" class="inp" placeholder="••••••••" required></div>
+        <button type="submit" class="btn btn-p" style="width:100%;justify-content:center;padding:12px;font-size:14px"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+      </form>
+      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--t3)">No account? <a href="/register" style="color:var(--ac)">Create one free</a></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

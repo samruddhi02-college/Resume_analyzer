@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block content %}
+<div class="ph"><div><h1>About ResumeAI</h1><p>How the AI screening and data mining work.</p></div></div>
+
+<div class="g4" style="margin-bottom:20px">
+  {% for val,lbl,col in [('2M+','Resumes Screened','var(--ac)'),('98%','AI Accuracy','var(--gr)'),('5K+','Companies','var(--pk)'),('10×','Faster Hiring','var(--yw)')] %}
+  <div class="stat" style="text-align:center">
+    <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:{{ col }}">{{ val }}</div>
+    <div style="font-size:10px;color:var(--t3);margin-top:4px;text-transform:uppercase">{{ lbl }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card" style="margin-bottom:18px">
+  <div class="card-title"><i class="fas fa-code" style="color:var(--ac)"></i> Tech Stack</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+    {% for name,icon,col,desc in [
+      ('Python + Flask','fas fa-flask','var(--ac)','Backend — lightweight, no heavy frameworks'),
+      ('pdfplumber','fas fa-file-pdf','var(--pk)','PDF text extraction with layout parsing'),
+      ('python-docx','fas fa-file-word','var(--cy)','Word document (.docx) parsing'),
+      ('Chart.js 4','fas fa-chart-bar','var(--yw)','Interactive charts on all pages'),
+      ('Custom NLP','fas fa-brain','var(--ac)','Keyword extraction + regex scoring'),
+      ('Apriori Algorithm','fas fa-project-diagram','var(--gr)','Skill co-occurrence association rules')
+    ] %}
+    <div style="background:var(--b3);border:1px solid var(--bd);border-radius:10px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div style="width:28px;height:28px;background:{{ col }}22;border-radius:7px;display:flex;align-items:center;justify-content:center">
+          <i class="{{ icon }}" style="color:{{ col }};font-size:12px"></i>
+        </div>
+        <strong style="font-size:13px">{{ name }}</strong>
+      </div>
+      <div style="font-size:12px;color:var(--t3);line-height:1.5">{{ desc }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:18px">
+  <div class="card-title"><i class="fas fa-database" style="color:var(--gr)"></i> Data Mining Techniques</div>
+  {% for num,name,icon,col,desc in [
+    ('1','Pattern Recognition','fas fa-search','var(--ac)','Scans resumes for 200+ skill keywords. Weighted scoring: seniority words +5pts, advanced degree +4pts, certifications +3pts. The total becomes the AI score.'),
+    ('2','Association Rules (Apriori)','fas fa-project-diagram','var(--gr)','Finds which skills co-occur in high-scoring profiles. Example: Python → Django with high frequency. Helps understand skill bundles and improve job descriptions.'),
+    ('3','K-Means Clustering','fas fa-layer-group','var(--ac)','Groups candidates by score into 4 tiers: Elite (90+), Strong (80-89), Moderate (70-79), Below (<70). Each tier has a recommended hiring action.'),
+    ('4','TF-IDF Weighting','fas fa-file-search','var(--cy)','Skills frequent in top resumes but rare in poor ones get amplified weight. Rare high-value skills like Kubernetes score more than common low-signal ones like Excel.')
+  ] %}
+  <div style="display:flex;gap:14px;padding:16px;background:var(--b3);border-radius:10px;border:1px solid var(--bd);margin-bottom:10px">
+    <div style="width:44px;height:44px;background:{{ col }}18;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <i class="{{ icon }}" style="color:{{ col }};font-size:18px"></i>
+    </div>
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+        <span style="font-size:10px;background:{{ col }}22;color:{{ col }};padding:2px 8px;border-radius:20px;font-weight:700">TECHNIQUE {{ num }}</span>
+        <strong style="font-size:14px">{{ name }}</strong>
+      </div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.65">{{ desc }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <div class="card-title"><i class="fas fa-book" style="color:var(--yw)"></i> Quick Start</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+    {% for step,label,href,icon,col,desc in [
+      ('1','Post a Job','/jobs','fas fa-briefcase','var(--ac)','Add a position with required skills — these define the AI scoring baseline.'),
+      ('2','Screen Resumes','/screen','fas fa-upload','var(--gr)','Upload PDF/DOCX or paste text. AI scores and adds the candidate automatically.'),
+      ('3','Review Pipeline','/candidates','fas fa-users','var(--pk)','Browse AI-ranked candidates. Filter by job, status, or score.'),
+      ('4','Explore Mining','/data-mining','fas fa-database','var(--cy)','See patterns, clusters, and skill associations across all candidates.')
+    ] %}
+    <a href="{{ href }}" style="background:var(--b3);border:1px solid var(--bd);border-radius:10px;padding:16px;display:block;transition:.15s" onmouseover="this.style.borderColor='{{ col }}'" onmouseout="this.style.borderColor='var(--bd)'">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:30px;height:30px;background:{{ col }}22;border-radius:8px;display:flex;align-items:center;justify-content:center">
+          <i class="{{ icon }}" style="color:{{ col }};font-size:13px"></i>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px">Step {{ step }}</div>
+          <div style="font-size:13px;font-weight:700">{{ label }}</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--t3);line-height:1.55">{{ desc }}</div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

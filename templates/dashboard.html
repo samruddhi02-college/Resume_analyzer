@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="banner">
+  <div>
+    <h1>Good morning, {{ session.user_name.split()[0] }} 👋</h1>
+    <p>Your hiring pipeline is live. Stats update as new resumes are screened.</p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a href="/screen"      class="btn btn-p"><i class="fas fa-upload"></i> Screen Resume</a>
+    <a href="/data-mining" class="btn btn-o"><i class="fas fa-database"></i> Data Mining</a>
+  </div>
+</div>
+
+<div class="g4" style="margin-bottom:20px">
+  <div class="stat bl"><div class="stat-val">{{ total }}</div><div class="stat-lbl">Applications</div></div>
+  <div class="stat gr"><div class="stat-val">{{ shortlisted }}</div><div class="stat-lbl">Shortlisted</div></div>
+  <div class="stat yw"><div class="stat-val">{{ interviews }}</div><div class="stat-lbl">Interviews</div></div>
+  <div class="stat pk"><div class="stat-val">{{ avg_score }}%</div><div class="stat-lbl">Avg AI Score</div></div>
+</div>
+
+<div class="g2" style="margin-bottom:20px">
+  <div class="card">
+    <div class="card-title"><i class="fas fa-chart-pie" style="color:var(--ac)"></i> Candidate Pipeline</div>
+    <div style="position:relative;height:220px"><canvas id="pipeChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="fas fa-users" style="color:var(--gr)"></i> Recent Candidates</div>
+    {% for c in recent %}
+    <a href="/candidate/{{ c.id }}" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd)">
+      <div class="av" style="border-radius:50%;background:hsl({{ loop.index*60 }},60%,45%)">{{ c.name[:2].upper() }}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:13px">{{ c.name }}</div>
+        <div style="font-size:11px;color:var(--t2)">{{ c.experience }} exp</div>
+      </div>
+      <div style="text-align:right">
+        <div><span class="badge badge-{{ 'sl' if c.status=='Shortlisted' else 'rj' if c.status=='Rejected' else 'iv' if c.status=='Interview Scheduled' else 'rv' }}">{{ c.status }}</span></div>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:{{ 'var(--gr)' if c.score>=85 else 'var(--yw)' if c.score>=70 else 'var(--pk)' }}">{{ c.score }}%</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="g2">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="card-title" style="margin:0"><i class="fas fa-briefcase" style="color:var(--yw)"></i> Job Positions</div>
+      <a href="/jobs" class="btn btn-o btn-sm">View All</a>
+    </div>
+    {% for job in jobs %}
+    <a href="/candidates?job={{ job.id }}" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;border:1px solid var(--bd);margin-bottom:8px;transition:.15s" onmouseover="this.style.borderColor='var(--ac)'" onmouseout="this.style.borderColor='var(--bd)'">
+      <div>
+        <div style="font-weight:600;font-size:13px;margin-bottom:2px">{{ job.title }}</div>
+        <div style="font-size:11px;color:var(--t3)">{{ job.location }} · {{ job.dept }}</div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <div style="text-align:center"><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--ac)">{{ job.applicants }}</div><div style="font-size:9px;color:var(--t3)">applied</div></div>
+        <div style="text-align:center"><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--gr)">{{ job.shortlisted }}</div><div style="font-size:9px;color:var(--t3)">shortlisted</div></div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="fas fa-bolt" style="color:var(--cy)"></i> Quick Actions</div>
+    {% for href,icon,label,desc in [('/screen','fas fa-upload','Screen Resume','AI scores instantly'),('/candidates','fas fa-users','All Candidates','Sorted by AI score'),('/analytics','fas fa-chart-bar','Analytics','Charts & trends'),('/data-mining','fas fa-database','Data Mining','Clusters & patterns')] %}
+    <a href="{{ href }}" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;border:1px solid var(--bd);margin-bottom:8px;transition:.15s" onmouseover="this.style.borderColor='var(--ac)'" onmouseout="this.style.borderColor='var(--bd)'">
+      <div style="width:36px;height:36px;background:rgba(124,107,255,.1);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="{{ icon }}" style="color:var(--ac)"></i></div>
+      <div><div style="font-weight:600;font-size:13px">{{ label }}</div><div style="font-size:11px;color:var(--t3)">{{ desc }}</div></div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const sd = {{ status_data|tojson }};
+new Chart(document.getElementById('pipeChart'),{
+  type:'doughnut',
+  data:{labels:Object.keys(sd),datasets:[{data:Object.values(sd),backgroundColor:['#3ddc84','#7c6bff','#ffb547','#ff6b8a'],borderWidth:0,hoverOffset:8}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{padding:12,font:{size:12},boxWidth:10}}}}
+});
+</script>
+{% endblock %}

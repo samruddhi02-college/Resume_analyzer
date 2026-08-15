@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}AI Screener{% endblock %}
+{% block content %}
+<div class="ph">
+  <div><h1><i class="fas fa-robot" style="color:var(--ac)"></i> AI Resume Screener</h1><p>Upload or paste a resume — instant AI score, skill analysis & insights.</p></div>
+  <a href="/candidates" class="btn btn-o btn-sm"><i class="fas fa-users"></i> All Candidates</a>
+</div>
+
+{% if err %}<div class="alert-e"><i class="fas fa-exclamation-circle"></i> {{ err }}</div>{% endif %}
+
+<div class="g2" style="align-items:start;gap:20px">
+
+  <!-- Form -->
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <form method="POST" enctype="multipart/form-data" id="sform">
+
+      <!-- Step 1 -->
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:26px;height:26px;background:var(--ac);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">1</div>
+          <span style="font-weight:700;font-size:14px">Select Job Position</span>
+        </div>
+        <select name="job_id" class="fsel">
+          {% for j in jobs %}<option value="{{ j.id }}">{{ j.title }} — {{ j.dept }}</option>{% endfor %}
+        </select>
+      </div>
+
+      <!-- Step 2 Upload -->
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:26px;height:26px;background:var(--gr);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">2</div>
+          <span style="font-weight:700;font-size:14px">Upload Resume File</span>
+        </div>
+        <div id="uzone" onclick="document.getElementById('rfile').click()"
+          style="border:2px dashed rgba(124,107,255,.3);border-radius:11px;padding:30px 20px;text-align:center;cursor:pointer;transition:.2s;background:rgba(124,107,255,.03)">
+          <input type="file" name="resume_file" id="rfile" accept=".pdf,.docx,.txt" onchange="onFile(this)" style="display:none">
+          <!-- Idle state -->
+          <div id="u-idle">
+            <div style="width:54px;height:54px;background:rgba(124,107,255,.12);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+              <i class="fas fa-cloud-upload-alt" style="font-size:22px;color:var(--ac)"></i>
+            </div>
+            <div style="font-weight:700;font-size:14px;margin-bottom:5px">Drag & drop or click to browse</div>
+            <div style="font-size:12px;color:var(--t2);margin-bottom:12px">PDF · DOCX · TXT · Max 10 MB</div>
+            <div style="display:flex;gap:7px;justify-content:center">
+              <span style="background:var(--b3);border:1px solid var(--bd2);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--t3)">PDF</span>
+              <span style="background:var(--b3);border:1px solid var(--bd2);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--t3)">DOCX</span>
+              <span style="background:var(--b3);border:1px solid var(--bd2);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--t3)">TXT</span>
+            </div>
+          </div>
+          <!-- File selected state -->
+          <div id="u-done" style="display:none">
+            <div style="width:54px;height:54px;background:rgba(61,220,132,.12);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+              <i class="fas fa-check-circle" style="font-size:24px;color:var(--gr)"></i>
+            </div>
+            <div id="u-name" style="font-weight:700;font-size:14px;color:var(--gr);margin-bottom:4px"></div>
+            <div id="u-size" style="font-size:12px;color:var(--t2);margin-bottom:12px"></div>
+            <button type="button" onclick="clearFile(event)" style="background:rgba(255,107,138,.1);border:1px solid rgba(255,107,138,.25);color:var(--pk);border-radius:8px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif"><i class="fas fa-times"></i> Remove file</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 Paste -->
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:26px;height:26px;background:rgba(124,107,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">3</div>
+          <span style="font-weight:700;font-size:14px">Or Paste Resume Text</span>
+        </div>
+        <textarea name="resume_text" id="rtext" class="fta" rows="8"
+          placeholder="Jane Smith — Senior Python Developer&#10;6 years | jane@email.com&#10;&#10;Skills: Python, Django, AWS, REST API&#10;Education: MS CS, MIT 2018&#10;&#10;Senior Dev at TechCorp 2021–present"></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button type="button" class="btn btn-o btn-sm" onclick="doSample('strong')"><i class="fas fa-star" style="color:var(--gr)"></i> Strong</button>
+          <button type="button" class="btn btn-o btn-sm" onclick="doSample('medium')"><i class="fas fa-star-half-alt" style="color:var(--yw)"></i> Medium</button>
+          <button type="button" class="btn btn-o btn-sm" onclick="doSample('weak')"><i class="far fa-star" style="color:var(--pk)"></i> Weak</button>
+        </div>
+      </div>
+
+      <button type="submit" id="sbtn" class="btn btn-p" style="width:100%;justify-content:center;padding:13px;font-size:15px;border-radius:10px">
+        <i class="fas fa-magic"></i> Analyze Resume with AI
+      </button>
+    </form>
+  </div>
+
+  <!-- Result panel -->
+  <div>
+  {% if result %}
+  <div class="card" style="border-color:rgba(124,107,255,.25)">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:22px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:5px">Position: <strong style="color:var(--t)">{{ result.job.title }}</strong></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="fas fa-check-circle" style="color:var(--gr);font-size:16px"></i>
+          <span style="font-weight:700;font-size:16px">Analysis Complete</span>
+        </div>
+      </div>
+      <!-- Score bubble -->
+      <div style="text-align:center;background:var(--b3);border:2px solid {{ 'rgba(61,220,132,.3)' if result.score>=85 else 'rgba(255,181,71,.3)' if result.score>=70 else 'rgba(255,107,138,.3)' }};border-radius:16px;padding:18px 26px;min-width:115px">
+        <div style="font-family:'Syne',sans-serif;font-size:52px;font-weight:800;line-height:1;color:{{ 'var(--gr)' if result.score>=85 else 'var(--yw)' if result.score>=70 else 'var(--pk)' }}">{{ result.score }}</div>
+        <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-top:3px">AI Score</div>
+        <div style="font-size:12px;font-weight:700;margin-top:4px;color:{{ 'var(--gr)' if result.score>=85 else 'var(--yw)' if result.score>=70 else 'var(--pk)' }}">{{ 'Elite' if result.score>=90 else 'Strong' if result.score>=80 else 'Moderate' if result.score>=70 else 'Below' }}</div>
+      </div>
+    </div>
+
+    <!-- Score bar -->
+    <div style="margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:6px">
+        <span>Match Score</span>
+        <span style="font-weight:700;color:{{ 'var(--gr)' if result.score>=85 else 'var(--yw)' if result.score>=70 else 'var(--pk)' }}">{{ result.score }}%</span>
+      </div>
+      <div style="height:10px;background:var(--b3);border-radius:5px;overflow:hidden">
+        <div style="width:{{ result.score }}%;height:100%;background:linear-gradient(90deg,{{ 'var(--ac),var(--gr)' if result.score>=85 else 'var(--yw),#eab308' if result.score>=70 else 'var(--pk),#f97316' }});border-radius:5px;transition:width 1.2s ease"></div>
+      </div>
+    </div>
+
+    <!-- Recommendation -->
+    <div style="margin-bottom:18px">
+      <span class="badge badge-{{ 'sl' if result.status=='Shortlisted' else 'rj' if result.status=='Rejected' else 'rv' }}" style="font-size:13px;padding:8px 18px">
+        <i class="fas fa-{{ 'check-circle' if result.status=='Shortlisted' else 'times-circle' if result.status=='Rejected' else 'clock' }}"></i>
+        Recommendation: <strong>{{ result.status }}</strong>
+      </span>
+    </div>
+
+    <!-- Skills grid -->
+    <div class="g2" style="gap:10px;margin-bottom:18px">
+      <div style="background:rgba(61,220,132,.05);border:1px solid rgba(61,220,132,.15);border-radius:11px;padding:14px">
+        <div style="font-size:10px;color:var(--gr);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:9px">✓ Matched Skills</div>
+        {% for s in result.matched %}<span class="tag" style="background:rgba(61,220,132,.1);color:#5ddb96;border-color:rgba(61,220,132,.2)">{{ s }}</span>{% endfor %}
+        {% if not result.matched %}<span style="font-size:12px;color:var(--t3)">None matched</span>{% endif %}
+      </div>
+      <div style="background:rgba(255,107,138,.05);border:1px solid rgba(255,107,138,.15);border-radius:11px;padding:14px">
+        <div style="font-size:10px;color:var(--pk);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:9px">✗ Missing Skills</div>
+        {% for s in result.missing %}<span class="tag" style="background:rgba(255,107,138,.1);color:#ff8fab;border-color:rgba(255,107,138,.2)">{{ s }}</span>{% endfor %}
+        {% if not result.missing %}<span style="font-size:12px;color:var(--gr)">All skills present! 🎉</span>{% endif %}
+      </div>
+    </div>
+
+    <!-- AI Insights -->
+    <div style="background:var(--b3);border-radius:11px;padding:16px;margin-bottom:16px">
+      <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px"><i class="fas fa-lightbulb" style="color:var(--yw)"></i> AI Insights</div>
+      {% for ins in result.insights %}
+      <div style="font-size:13px;color:var(--t2);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)">{{ ins }}</div>
+      {% endfor %}
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a href="/candidates" class="btn btn-p btn-sm"><i class="fas fa-users"></i> View Pipeline</a>
+      <a href="/screen" class="btn btn-o btn-sm"><i class="fas fa-redo"></i> Screen Another</a>
+    </div>
+
+    {% if result.preview %}
+    <details style="margin-top:14px">
+      <summary style="cursor:pointer;font-size:12px;color:var(--t3);padding:6px 0;user-select:none"><i class="fas fa-file-alt"></i> View extracted text</summary>
+      <pre style="margin-top:8px;background:var(--b3);border-radius:9px;padding:12px;font-size:11px;color:var(--t2);white-space:pre-wrap;max-height:160px;overflow-y:auto;line-height:1.6">{{ result.preview }}</pre>
+    </details>
+    {% endif %}
+  </div>
+
+  {% else %}
+  <!-- Empty state -->
+  <div class="card" style="min-height:460px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border-style:dashed">
+    <div style="width:76px;height:76px;background:rgba(124,107,255,.1);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:18px">
+      <i class="fas fa-robot" style="font-size:34px;color:var(--ac)"></i>
+    </div>
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Ready to Screen</h3>
+    <p style="color:var(--t2);font-size:13px;max-width:250px;line-height:1.65;margin-bottom:22px">Upload a PDF/DOCX or paste resume text — get an instant AI score and skill gap analysis.</p>
+    <div style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:230px">
+      {% for j in jobs[:3] %}
+      <div style="background:var(--b3);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--t2);display:flex;align-items:center;gap:8px">
+        <i class="fas fa-briefcase" style="color:var(--ac);font-size:11px"></i>{{ j.title[:26] }}{% if j.title|length>26 %}…{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const S={
+  strong:`Sarah Chen — Senior Python Developer\n6 years | sarah@email.com\n\nEDUCATION\nMS Computer Science, MIT 2018\n\nSKILLS\nPython, Django, PostgreSQL, AWS, REST API, Docker\n\nEXPERIENCE\nSenior Dev at TechCorp 2021–present\n- Led team of 5 engineers\n- Managed AWS EC2, RDS, Lambda`,
+  medium:`Marcus Williams — Python Developer\n4 years | marcus@email.com\n\nSkills: Python, Flask, REST API, MySQL\n\nEducation: BS Software Eng, State Univ\n\nExperience: Backend Dev at WebAgency 2020–present`,
+  weak:`David Kim\nJunior Dev — 1 year\nSkills: Python, HTML, CSS\nEducation: 2nd year CS student\nProjects: Todo app in Flask`
+};
+function doSample(t){document.getElementById('rtext').value=S[t];clearFile();}
+function onFile(inp){
+  if(!inp.files[0])return;
+  const f=inp.files[0];
+  document.getElementById('u-name').textContent=f.name;
+  document.getElementById('u-size').textContent=(f.size/1024).toFixed(0)+' KB · '+f.name.split('.').pop().toUpperCase();
+  document.getElementById('u-idle').style.display='none';
+  document.getElementById('u-done').style.display='block';
+  document.getElementById('uzone').style.cssText+='border-color:rgba(61,220,132,.45);background:rgba(61,220,132,.04);';
+  document.getElementById('rtext').value='';
+}
+function clearFile(e){
+  if(e)e.stopPropagation();
+  document.getElementById('rfile').value='';
+  document.getElementById('u-idle').style.display='block';
+  document.getElementById('u-done').style.display='none';
+  document.getElementById('uzone').style.borderColor='rgba(124,107,255,.3)';
+  document.getElementById('uzone').style.background='rgba(124,107,255,.03)';
+}
+const z=document.getElementById('uzone');
+z.addEventListener('dragover',e=>{e.preventDefault();z.style.borderColor='var(--ac)';z.style.background='rgba(124,107,255,.07)';});
+z.addEventListener('dragleave',()=>{if(!document.getElementById('rfile').files[0]){z.style.borderColor='rgba(124,107,255,.3)';z.style.background='rgba(124,107,255,.03)';}});
+z.addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f){const d=new DataTransfer();d.items.add(f);document.getElementById('rfile').files=d.files;onFile(document.getElementById('rfile'));}});
+document.getElementById('sform').addEventListener('submit',()=>{const b=document.getElementById('sbtn');b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Analyzing...';b.disabled=true;});
+</script>
+{% endblock %}
