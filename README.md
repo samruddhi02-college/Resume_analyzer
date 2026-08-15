@@ -1,0 +1,2 @@
+# Resume_analyzer
+Resume Analyzer is an AI-powered tool that reviews resumes for structure, keywords, and relevance. It provides instant feedback on strengths and areas for improvement, ensuring candidates present their skills effectively and recruiters can quickly identify top talent. With ATS-friendly checks and job-description matching, it streamlines the hiring process and boosts interview success rates.
